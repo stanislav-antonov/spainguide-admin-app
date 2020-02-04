@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 
 import {
-    Route,
-    NavLink,
-    HashRouter
+	Route,
+	NavLink,
+	HashRouter
 } from "react-router-dom";
 
 import Home from "./Home";
@@ -47,7 +47,7 @@ class Main extends Component {
 						<div class="container-fluid content">
 							<Route exact path="/" component={Home}/>
 							<Route exact path="/articles" component={Articles}/>
-                            <Route exact path="/article/:id?" component={Article}/>
+							<Route exact path="/article/:id?" component={Article}/>
 						</div>
 					</div>
 				</div>
