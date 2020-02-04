@@ -8,6 +8,7 @@ import {
 
 import Home from "./Home";
 import Articles from "./Articles";
+import Article from "./Article";
 
 class Main extends Component {
 	render() {
@@ -46,6 +47,7 @@ class Main extends Component {
 						<div class="container-fluid content">
 							<Route exact path="/" component={Home}/>
 							<Route exact path="/articles" component={Articles}/>
+                            <Route exact path="/article/:id?" component={Article}/>
 						</div>
 					</div>
 				</div>

@@ -47,3 +47,17 @@ body {
     margin-left: -15rem;
   }
 }
+
+
+/* Image uploader css */
+
+.uploadPictureContainer:not(:last-of-type) {
+    display: none;
+}
+
+.fileContainer {
+    box-shadow: none;
+    border-radius: 0;
+    border: 1px solid #ccc;
+}
+
