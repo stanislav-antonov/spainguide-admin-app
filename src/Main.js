@@ -11,7 +11,11 @@ import Articles from "./Articles";
 import Article from "./Article";
 
 class Main extends Component {
-	render() {
+    componentDidMount() {
+        require("./index.css");
+    }
+    
+    render() {
 		return (
 			<HashRouter>
 				<div class="d-flex" id="wrapper">

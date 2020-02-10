@@ -28,7 +28,12 @@ class Article extends Component {
 	}
 
 	handleSave = (e) => {
-		let id = this.props.match.params.id;
+        this.saveArticle();
+        this.saveImage();
+    }
+    
+    saveArticle() {
+        let id = this.props.match.params.id;
 		let action = id ? "update/" + id  : "create";
 		let endpointUrl = process.env.REACT_APP_SERVER_URL + "/api/admin/article/" + action;
 		
@@ -38,7 +43,6 @@ class Article extends Component {
 		formData.append("title", this.state.title);
 		formData.append("description", this.state.description);
 		formData.append("preview", this.state.preview);
-		formData.append("image", this.state.images[this.state.images.length - 1]);
 		formData.append("content", this.state.content);
 		formData.append("active", this.state.active);
 
@@ -54,9 +58,26 @@ class Article extends Component {
 		).catch(
 			error => console.log(error)
 		);
+    }
 
-		console.log("Article was saved");
-	}
+    saveImage() {
+        let endpointUrl = process.env.REACT_APP_SERVER_URL + "/file-storage/store-file";
+        let formData = new FormData();
+		formData.append("image", this.state.images[this.state.images.length - 1]);
+
+        console.log("Image store endpoint URL: " + endpointUrl);
+
+        fetch(endpointUrl, {
+			method: "POST",
+			body: formData
+		}).then(
+			response => response.json()
+		).then(
+			success => console.log(success)
+		).catch(
+			error => console.log(error)
+		);
+    }
 
 	handleHeadlineChange = (e) => {
 		this.setState({headline: e.target.value});
