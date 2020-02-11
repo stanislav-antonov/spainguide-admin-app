@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { authenticationService } from "./_services/authentication.service.js";
 
 class Login extends Component {
     constructor(props) {
@@ -6,37 +7,31 @@ class Login extends Component {
 		this.state = { 
 			username: "",
             password: "",
-            error: undefined,
+            error: "",
             isLoading: false
-		};
+        };
+        
+        if (authenticationService.isAuthenticated) {
+            this.props.history.push("/");
+        }
 	}
     
-    componentDidMount() {
-        require("./login.css");
-    }
-
-    handleSignin = (e) => {
+    handleLogin = (e) => {
         e.preventDefault();
-
-        let endpointUrl = process.env.REACT_APP_SERVER_URL + "/login";
         this.setState({ isLoading: true });
-
-		fetch(endpointUrl, {
-			method: "POST",
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                username: this.state.username,
-                password: this.state.password,
-            })
-        }).then(response => {
-            console.log(response.headers.get('Authorization'));
-            return response.text() 
-        }).then(data => {
-            this.setState({ isLoading: false })
-        }).catch(error => this.setState({ error: error, isLoading: false }));
+        
+        authenticationService.login(this.state.username, this.state.password)
+        .then(response => {
+            this.setState({ isLoading: false });
+            if (response.ok) {
+                const { from } = this.props.location.state || { from: { pathname: "/" } };
+                console.log("from: " + from);
+                this.props.history.push(from);
+            } else if ([401, 403].indexOf(response.status) !== -1) {
+                authenticationService.logout();
+                this.setState({ error: "Bad credentials" })
+            }
+        }).catch(error => this.setState({ error: error.message, isLoading: false }));
     }
 
     handleUsernameChange = (e) => {
@@ -49,9 +44,6 @@ class Login extends Component {
     
     render() {
         const { isLoading, error } = this.state;
-        if (error) {
-            return <p>{error.message}</p>;
-        }
         
         if (isLoading) {
             return <p>Loading ...</p>;
@@ -59,15 +51,16 @@ class Login extends Component {
 
 		return (
             <div className="text-center">
+                <div className="mb-3">{error}</div>
                 <form className="form-signin" method="post">
-                    <h1 className="h3 mb-3 font-weight-normal">Please sign in</h1>
+                    <h1 className="h3 mb-3 font-weight-normal">Please log in</h1>
                     <label htmlFor="username" className="sr-only">User</label>
                     <input type="text" name="username" id="username" className="form-control" placeholder="User" required autoFocus onChange={this.handleUsernameChange} />
                     <label htmlFor="password" className="sr-only">Password</label>
                     <input type="password" name="password" id="password" className="form-control" placeholder="Password" required onChange={this.handlePasswordChange} />
                     <div className="mb-3"></div>
 
-                    <input type="submit" className="btn btn-lg btn-primary btn-block" value="Sign In" onClick={this.handleSignin} />
+                    <input type="submit" className="btn btn-lg btn-primary btn-block" value="Log In" onClick={this.handleLogin} />
                 </form>
             </div>
 		);

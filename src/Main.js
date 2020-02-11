@@ -9,10 +9,11 @@ import {
 import Home from "./Home";
 import Articles from "./Articles";
 import Article from "./Article";
+import { loadDynamicScript } from "./_helpers/common.js";
 
 class Main extends Component {
-    componentDidMount() {
-        require("./index.css");
+    componentWillMount() {
+        loadDynamicScript( process.env.REACT_APP_DISTR_PATH_BASE + "/dist/common.js", "common", null);
     }
     
     render() {
@@ -28,7 +29,6 @@ class Main extends Component {
 					</div>
 					
 					<div id="page-content-wrapper">
-				
 						<nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
 							<button class="btn btn-primary" id="menu-toggle">Toggle Menu</button>
 					
