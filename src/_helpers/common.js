@@ -1,4 +1,4 @@
-export const loadDynamicScript = (url, id, callback) => {
+export const loadScript = (url, id, callback) => {
 	var script = document.getElementById("scriptId");
   	if (!script) {
 	    script = document.createElement("script");

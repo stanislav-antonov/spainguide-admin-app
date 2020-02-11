@@ -9,11 +9,11 @@ import {
 import Home from "./Home";
 import Articles from "./Articles";
 import Article from "./Article";
-import { loadDynamicScript } from "./_helpers/common.js";
+import { loadScript } from "./_helpers/common.js";
 
 class Main extends Component {
     componentWillMount() {
-        loadDynamicScript( process.env.REACT_APP_DISTR_PATH_BASE + "/dist/common.js", "common", null);
+        loadScript(process.env.REACT_APP_DISTR_PATH_BASE + "/dist/common.js", "common", null);
     }
     
     render() {
