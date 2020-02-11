@@ -9,7 +9,6 @@ import {
 import Login from "./Login";
 import Main from "./Main";
 import { authenticationService } from "./_services/authentication.service.js";
-import "./index.css";
 
 const PrivateRoute = ({ component: Component, ...rest }) => (
     <Route {...rest} render = {(props) => (
