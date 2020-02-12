@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import ImageUploader from "react-images-upload";
+import { fileStorageService } from "./_services/file.storage.service.js";
 
 class Article extends Component {
 	constructor(props) {
@@ -28,16 +29,17 @@ class Article extends Component {
 	}
 
 	handleSave = (e) => {
-        this.saveArticle();
-        this.saveImage();
+        e.preventDefault();
+        // this.saveArticle();
+        fileStorageService.store(this.state.images[this.state.images.length - 1]);
     }
     
     saveArticle() {
-        let id = this.props.match.params.id;
-		let action = id ? "update/" + id  : "create";
-		let endpointUrl = process.env.REACT_APP_SERVER_URL + "/api/admin/article/" + action;
+        const id = this.props.match.params.id;
+		const action = id ? "update/" + id  : "create";
+		const endpointUrl = process.env.REACT_APP_SERVER_URL + "/api/admin/article/" + action;
 		
-		let formData = new FormData();
+		const formData = new FormData();
 		formData.append("headline", this.state.headline);
 		formData.append("alias", this.state.alias);
 		formData.append("title", this.state.title);
@@ -45,8 +47,6 @@ class Article extends Component {
 		formData.append("preview", this.state.preview);
 		formData.append("content", this.state.content);
 		formData.append("active", this.state.active);
-
-		console.log("Article save endpoint URL: " + endpointUrl);
 
 		fetch(endpointUrl, {
 			method: "POST",
@@ -60,26 +60,7 @@ class Article extends Component {
 		);
     }
 
-    saveImage() {
-        let endpointUrl = process.env.REACT_APP_SERVER_URL + "/file-storage/store-file";
-        let formData = new FormData();
-		formData.append("image", this.state.images[this.state.images.length - 1]);
-
-        console.log("Image store endpoint URL: " + endpointUrl);
-
-        fetch(endpointUrl, {
-			method: "POST",
-			body: formData
-		}).then(
-			response => response.json()
-		).then(
-			success => console.log(success)
-		).catch(
-			error => console.log(error)
-		);
-    }
-
-	handleHeadlineChange = (e) => {
+    handleHeadlineChange = (e) => {
 		this.setState({headline: e.target.value});
 	}
 
@@ -118,31 +99,31 @@ class Article extends Component {
 	render() {
 		return (
 			<div>
-				<h1 class="mt-4">Article</h1>
+				<h1 className="mt-4">Article</h1>
 				<form>
-					<div class="form-group">
-						<input type="text" class="form-control" id="headlineInput" placeholder="Headline" value={this.state.headline} onChange={this.handleHeadlineChange} />
+					<div className="form-group">
+						<input type="text" className="form-control" id="headlineInput" placeholder="Headline" value={this.state.headline} onChange={this.handleHeadlineChange} />
 					</div>
 
-					<div class="form-group">
-						<input type="text" class="form-control" id="aliasInput" placeholder="Alias" aria-describedby="aliasHelp" value={this.state.alias} onChange={this.handleAliasChange} />
-						<small id="aliasHelp" class="form-text text-muted">For SEO purposes: human readable URL</small>
+					<div className="form-group">
+						<input type="text" className="form-control" id="aliasInput" placeholder="Alias" aria-describedby="aliasHelp" value={this.state.alias} onChange={this.handleAliasChange} />
+						<small id="aliasHelp" className="form-text text-muted">For SEO purposes: human readable URL</small>
 					</div>
 
-					<div class="form-group">
-						<input type="text" class="form-control" id="titleInput" placeholder="Title" aria-describedby="titleHelp" value={this.state.title} onChange={this.handleTitleChange} />
-						<small id="titleHelp" class="form-text text-muted">For SEO purposes: goes directly to "meta title" tag</small>
+					<div className="form-group">
+						<input type="text" className="form-control" id="titleInput" placeholder="Title" aria-describedby="titleHelp" value={this.state.title} onChange={this.handleTitleChange} />
+						<small id="titleHelp" className="form-text text-muted">For SEO purposes: goes directly to "meta title" tag</small>
 					</div>
 					
-					<div class="form-group">
-						<textarea class="form-control" id="descriptionInput" rows="3" placeholder="Description" aria-describedby="descriptionHelp" onChange={this.handleDescriptionChange} value={this.state.description}></textarea>
-						<small id="descriptionHelp" class="form-text text-muted">For SEO purposes: goes directly to "meta description" tag</small>
+					<div className="form-group">
+						<textarea className="form-control" id="descriptionInput" rows="3" placeholder="Description" aria-describedby="descriptionHelp" onChange={this.handleDescriptionChange} value={this.state.description}></textarea>
+						<small id="descriptionHelp" className="form-text text-muted">For SEO purposes: goes directly to "meta description" tag</small>
 					</div>
 					
-					<div class="form-group">
-						<textarea class="form-control" id="previewInput" rows="6" placeholder="Preview" onChange={this.handlePreviewChange} value={this.state.preview}></textarea>
+					<div className="form-group">
+						<textarea className="form-control" id="previewInput" rows="6" placeholder="Preview" onChange={this.handlePreviewChange} value={this.state.preview}></textarea>
 					</div>
-					<div class="form-group">
+					<div className="form-group">
 						<ImageUploader
 							// defaultImages = {[]}
 							singleImage = {true}
@@ -155,7 +136,7 @@ class Article extends Component {
 							label = {""}
 						/>
 					</div>
-					<div class="form-group">
+					<div className="form-group">
 						<Editor
 							value = { this.state.content }
 							init = {{
@@ -177,17 +158,17 @@ class Article extends Component {
 							onChange = { this.handleEditorChange }
 						/>
 					</div>
-					<div class="form-check">
-						<input type="checkbox" class="form-check-input" id="activeCheck" onChange={this.handleActiveChange} checked={this.state.active}/>
-						<label class="form-check-label" for="activeCheck">Active</label>
+					<div className="form-check">
+						<input type="checkbox" className="form-check-input" id="activeCheck" onChange={this.handleActiveChange} checked={this.state.active}/>
+						<label className="form-check-label" htmlFor="activeCheck">Active</label>
 					</div>
-					<div class="form-group">
-						<button class="btn btn-lg btn-primary btn-block" onClick={this.handleSave}>Save</button>
+					<div className="form-group">
+						<button className="btn btn-lg btn-primary btn-block" onClick={this.handleSave}>Save</button>
 					</div>
 				</form>
 			</div>
 		);
 	}
 }
- 
+
 export default Article;

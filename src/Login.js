@@ -25,7 +25,6 @@ class Login extends Component {
             this.setState({ isLoading: false });
             if (response.ok) {
                 const { from } = this.props.location.state || { from: { pathname: "/" } };
-                console.log("from: " + from);
                 this.props.history.push(from);
             } else if ([401, 403].indexOf(response.status) !== -1) {
                 authenticationService.logout();
