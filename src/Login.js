@@ -26,9 +26,11 @@ class Login extends Component {
             if (response.ok) {
                 const { from } = this.props.location.state || { from: { pathname: "/" } };
                 this.props.history.push(from);
-            } else if ([401, 403].indexOf(response.status) !== -1) {
-                authenticationService.logout();
-                this.setState({ error: "Bad credentials" })
+            } else {
+                if ([401, 403].indexOf(response.status) !== -1) {
+                    authenticationService.logout();
+                    this.setState({ error: "Bad credentials" });
+                }
             }
         }).catch(error => this.setState({ error: error.message, isLoading: false }));
     }

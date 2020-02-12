@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import ImageUploader from "react-images-upload";
 import { fileStorageService } from "./_services/file.storage.service.js";
+import { authenticationService } from "./_services/authentication.service.js";
+import { articleService } from "./_services/article.service.js";
 
 class Article extends Component {
 	constructor(props) {
@@ -14,9 +16,13 @@ class Article extends Component {
 			description: "",
 			preview: "",
 			content: "",
-			active: true
+            active: true,
+            
+            error: "",
+            isLoading: false,
 		};
-		this.handleImageChange = this.handleImageChange.bind(this);
+
+        this.handleImageChange = this.handleImageChange.bind(this);
 		this.handleEditorChange = this.handleEditorChange.bind(this);
 	}
 
@@ -30,17 +36,27 @@ class Article extends Component {
 
 	handleSave = (e) => {
         e.preventDefault();
-        // this.saveArticle();
-        fileStorageService.store(this.state.images[this.state.images.length - 1]);
+        this.setState({ isLoading: true });
+        fileStorageService.store(this.state.images[this.state.images.length - 1])
+            .then(response => { 
+                if (response.ok) {
+                    const imageData = response.json();
+                    this.saveArticle(imageData);
+                } else {
+                    this.setState({ isLoading: false });
+                    if ([401, 403].indexOf(response.status) !== -1) {
+                        authenticationService.logout();
+                        this.props.history.push("/login");
+                    }
+                }
+            }).catch(error => this.setState({ error: error.message, isLoading: false }));
     }
     
-    saveArticle() {
+    saveArticle(imageData) {
         const id = this.props.match.params.id;
-		const action = id ? "update/" + id  : "create";
-		const endpointUrl = process.env.REACT_APP_SERVER_URL + "/api/admin/article/" + action;
-		
-		const formData = new FormData();
-		formData.append("headline", this.state.headline);
+        const formData = new FormData();
+
+        formData.append("headline", this.state.headline);
 		formData.append("alias", this.state.alias);
 		formData.append("title", this.state.title);
 		formData.append("description", this.state.description);
@@ -48,16 +64,19 @@ class Article extends Component {
 		formData.append("content", this.state.content);
 		formData.append("active", this.state.active);
 
-		fetch(endpointUrl, {
-			method: "POST",
-			body: formData
-		}).then(
-			response => response.json()
-		).then(
-			success => console.log(success)
-		).catch(
-			error => console.log(error)
-		);
+        articleService.save(id, formData)
+            .then(response => { 
+                this.setState({ isLoading: false });
+                if (response.ok) {
+                    // Article was saved
+                    //
+                } else {
+                    if ([401, 403].indexOf(response.status) !== -1) {
+                        authenticationService.logout();
+                        this.props.history.push("/login");
+                    }
+                }
+            }).catch(error => this.setState({ error: error.message, isLoading: false }));
     }
 
     handleHeadlineChange = (e) => {

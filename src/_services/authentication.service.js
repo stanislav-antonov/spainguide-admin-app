@@ -1,15 +1,11 @@
 
-import { BehaviorSubject } from "rxjs";
-
-const tokenSubject = new BehaviorSubject(localStorage.getItem("token"));
-
 export const authenticationService = {
     get isAuthenticated() { 
-        return tokenSubject.value != null;
+        return this.token != null;
     },
     
     get token() { 
-        return tokenSubject.value;
+        return localStorage.getItem("token");
     },
     
     login(username, password) {
@@ -23,9 +19,8 @@ export const authenticationService = {
         return fetch(endpointUrl, requestOptions)
             .then(response => {
                 if (response.ok) {
-                    let token = response.headers.get("Authorization");
+                    const token = response.headers.get("Authorization");
                     localStorage.setItem("token", token);
-                    tokenSubject.next(token);
                 }
 
                 return response;
@@ -34,6 +29,5 @@ export const authenticationService = {
     
     logout() {
         localStorage.removeItem("token");
-        tokenSubject.next(null);
     },
 };
