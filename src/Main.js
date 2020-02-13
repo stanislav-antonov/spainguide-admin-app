@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 
 import Home from "./Home";
-import Articles from "./Articles";
+import ArticleList from "./ArticleList";
 import Article from "./Article";
 import { loadScript } from "./_helpers/load.script.js";
 
@@ -50,7 +50,7 @@ class Main extends Component {
 					
 						<div className="container-fluid content">
 							<Route exact path="/" component={Home}/>
-							<Route exact path="/articles" component={Articles}/>
+							<Route exact path="/articles" component={ArticleList}/>
 							<Route exact path="/article/:id?" component={Article}/>
 						</div>
 					</div>
