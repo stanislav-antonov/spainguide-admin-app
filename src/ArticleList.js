@@ -17,6 +17,7 @@ class ArticleList extends Component {
         articleService.list().then(response => { 
             this.setState({ isLoading: false });
             if (response.ok) {
+                console.log(response.json());
                 this.setState({ articles: response.json });
             } else {
                 if ([401, 403].indexOf(response.status) !== -1) {
@@ -30,7 +31,7 @@ class ArticleList extends Component {
     render() {
 		return (
 			<div>
-				<h1 class="mt-4">Articles</h1>
+				<h1 className="mt-4">Articles</h1>
 			</div>
 		);
 	}
