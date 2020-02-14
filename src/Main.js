@@ -8,7 +8,7 @@ import {
 
 import Home from "./Home";
 import ArticleList from "./ArticleList";
-import Article from "./Article";
+import ArticleEditor from "./ArticleEditor";
 import { loadScript } from "./_helpers/load.script.js";
 
 class Main extends Component {
@@ -24,7 +24,7 @@ class Main extends Component {
 						<div className="sidebar-heading">Administration </div>
 						<div className="list-group list-group-flush">
 							<NavLink to="/" className="list-group-item list-group-item-action bg-light" activeClassName="">Home</NavLink>
-							<NavLink to="/articles" className="list-group-item list-group-item-action bg-light" activeClassName="">Articles</NavLink>
+							<NavLink to="/article/list" className="list-group-item list-group-item-action bg-light" activeClassName="">Articles</NavLink>
 						</div>
 					</div>
 					
@@ -50,8 +50,8 @@ class Main extends Component {
 					
 						<div className="container-fluid content">
 							<Route exact path="/" component={Home}/>
-							<Route exact path="/articles" component={ArticleList}/>
-							<Route exact path="/article/:id?" component={Article}/>
+							<Route exact path="/article/list" component={ArticleList}/>
+							<Route exact path="/article/editor/:id?" component={ArticleEditor}/>
 						</div>
 					</div>
 				</div>

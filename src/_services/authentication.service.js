@@ -1,4 +1,3 @@
-
 export const authenticationService = {
     get isAuthenticated() { 
         return this.token != null;

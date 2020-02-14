@@ -5,7 +5,7 @@ import { fileStorageService } from "./_services/file.storage.service.js";
 import { authenticationService } from "./_services/authentication.service.js";
 import { articleService } from "./_services/article.service.js";
 
-class Article extends Component {
+class ArticleEditor extends Component {
 	constructor(props) {
 		super(props);
 		this.state = { 
@@ -190,4 +190,4 @@ class Article extends Component {
 	}
 }
 
-export default Article;
+export default ArticleEditor;
