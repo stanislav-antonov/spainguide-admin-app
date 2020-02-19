@@ -1,13 +1,13 @@
 import { authHeader } from "../_helpers/auth.header.js";
 
 export const articleService = {
-    save(id, formData) {
-		const action = id ? "update/" + id  : "create";
+    save(article) {
+        const action = article.id ? "update/" + article.id  : "create";
 		const endpointUrl = process.env.REACT_APP_SERVER_URL + "/api/article/" + action;
         const requestOptions = {
             method: "POST",
             headers: authHeader(),
-            body: formData,
+            body: JSON.stringify(article),
         };
     
         return fetch(endpointUrl, requestOptions);

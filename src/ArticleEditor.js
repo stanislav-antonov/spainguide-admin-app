@@ -53,18 +53,18 @@ class ArticleEditor extends Component {
     }
     
     saveArticle(imageData) {
-        const id = this.props.match.params.id;
-        const formData = new FormData();
-
-        formData.append("headline", this.state.headline);
-		formData.append("alias", this.state.alias);
-		formData.append("title", this.state.title);
-		formData.append("description", this.state.description);
-		formData.append("preview", this.state.preview);
-		formData.append("content", this.state.content);
-		formData.append("active", this.state.active);
-
-        articleService.save(id, formData)
+        const article = {
+            id: this.props.match.params.id,
+            headline: this.state.headline,
+            alias: this.state.alias,
+            title: this.state.title,
+            description: this.state.description,
+            preview: this.state.preview,
+            content: this.state.content,
+            active: this.state.active
+        };
+        
+        articleService.save(article)
             .then(response => { 
                 this.setState({ isLoading: false });
                 if (response.ok) {

@@ -35,16 +35,21 @@ class ArticleList extends Component {
 	}
 
 	render() {
-		return (
+        let articles;
+        if (this.state.articles) {
+            articles = this.state.articles.map(function(article, idx) {
+                return (
+                    <div key={idx}>
+                        <h4>{article.headline}</h4>
+                    </div>
+                )
+            });
+        }
+        
+        return (
 			<div>
 				<h1 className="mt-4">Articles</h1>
-                {this.state.articles.map(function(article, idx) {
-                    return (
-                        <div key={idx}>
-                            <h4>{article.headline}</h4>
-                        </div>
-                    )
-                })}
+                {articles}
 			</div>
 		);
 	}
