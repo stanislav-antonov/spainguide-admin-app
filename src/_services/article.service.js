@@ -17,6 +17,17 @@ export const articleService = {
         return fetch(endpointUrl, requestOptions);
     },
 
+    one(id) {
+		const endpointUrl = process.env.REACT_APP_SERVER_URL + "/api/article/one/" + id;
+        
+        const requestOptions = {
+            method: "GET",
+            headers: authHeader(),
+        };
+        
+        return fetch(endpointUrl, requestOptions);
+    },
+
     list() {
 		const endpointUrl = process.env.REACT_APP_SERVER_URL + "/api/article/list";
         const requestOptions = {

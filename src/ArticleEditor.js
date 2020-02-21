@@ -4,31 +4,63 @@ import ImageUploader from "react-images-upload";
 import { fileStorageService } from "./_services/file.storage.service.js";
 import { authenticationService } from "./_services/authentication.service.js";
 import { articleService } from "./_services/article.service.js";
+import { config } from "./config.js";
 
 class ArticleEditor extends Component {
 	constructor(props) {
 		super(props);
-		this.state = { 
-			images: [],
-			headline: "",
+        
+        this.state = { 
+            id: undefined,
+            headline: "",
 			alias: "",
 			title: "",
 			description: "",
 			preview: "",
 			content: "",
             active: true,
-            
+            image: undefined,
+
+            selectedImageFile: undefined,
+
             error: "",
             isLoading: false,
 		};
 
         this.handleImageChange = this.handleImageChange.bind(this);
-		this.handleEditorChange = this.handleEditorChange.bind(this);
+        this.handleEditorChange = this.handleEditorChange.bind(this);
+
+        this.imageUploaderProps = {
+            defaultImages: undefined,
+            singleImage: true,
+            withPreview: true,
+            withIcon: true,
+            buttonText: "Choose image",
+            onChange: this.handleImageChange,
+            imgExtension: [".jpg", ".png", ".gif"], 
+            maxFileSize: 5242880,
+            label: "",
+        };
 	}
 
+    get id() { 
+        return this.props.match.params.id || this.state.id; 
+    }
+
+    get imageUrl() {
+        return this.state.image ? config.fileStorageBaseURL + "/" + this.state.image : undefined; 
+    }
+
 	handleImageChange(imageFiles, imageDataURLs) {
-		this.setState({images: this.state.images.concat(imageFiles)});
-	}
+        var imageFile;
+        if (imageFiles.length > 1) {
+            imageFile = imageFiles[imageFiles.length - 1];
+        } else if (imageFiles.length === 1) {
+            imageFile = imageFiles[0];
+        }
+
+        this.setState({selectedImageFile: imageFile});
+    }
 
 	handleEditorChange = (e) => {
 		this.setState({content: e.target.getContent()});
@@ -37,48 +69,94 @@ class ArticleEditor extends Component {
 	handleSave = (e) => {
         e.preventDefault();
         this.setState({ isLoading: true });
-        fileStorageService.store(this.state.images[this.state.images.length - 1])
+        fileStorageService.store(this.state.selectedImageFile)
             .then(response => { 
                 if (response.ok) {
-                    const imageData = response.json();
-                    this.saveArticle(imageData);
+                    return response.json();
                 } else {
                     this.setState({ isLoading: false });
                     if ([401, 403].indexOf(response.status) !== -1) {
                         authenticationService.logout();
                         this.props.history.push("/login");
                     }
+
+                    return;
                 }
+            }).then(storedImageFileData => {
+                this.saveArticle(storedImageFileData.name);
             }).catch(error => this.setState({ error: error.message, isLoading: false }));
     }
     
-    saveArticle(imageData) {
+    saveArticle(imageFileName) {
         const article = {
-            id: this.props.match.params.id,
+            id: this.id,
             headline: this.state.headline,
             alias: this.state.alias,
             title: this.state.title,
             description: this.state.description,
             preview: this.state.preview,
             content: this.state.content,
-            active: this.state.active
+            active: this.state.active,
+            image: imageFileName,
         };
         
         articleService.save(article)
             .then(response => { 
                 this.setState({ isLoading: false });
                 if (response.ok) {
-                    // Article was saved
-                    //
+                    return response.json();
                 } else {
                     if ([401, 403].indexOf(response.status) !== -1) {
                         authenticationService.logout();
                         this.props.history.push("/login");
                     }
+
+                    return;
                 }
+            }).then(data => {
+                this.setState({ id: data.id });
+                this.props.history.push("/article/editor/" + data.id);
+                this.showArticle();
             }).catch(error => this.setState({ error: error.message, isLoading: false }));
     }
 
+    showArticle() {
+        if (this.id) {
+            articleService.one(this.id)
+                .then(response => { 
+                    this.setState({ isLoading: false });
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        if ([401, 403].indexOf(response.status) !== -1) {
+                            authenticationService.logout();
+                            this.props.history.push("/login");
+                        }
+
+                        return;
+                    }
+                }).then(data => {
+                    this.setState({
+                        id: data.id,
+                        headline: data.headline,
+                        alias: data.alias,
+                        title: data.title,
+                        description: data.description,
+                        preview: data.preview,
+                        content: data.content,
+                        active: data.active,
+                        image: data.image,
+                    });
+
+                    const imageUrl = this.imageUrl;
+                    if (imageUrl) {
+                        this.imageUploaderProps.defaultImages = [ imageUrl ];
+                        this.forceUpdate();
+                    }
+                }).catch(error => this.setState({ error: error.message, isLoading: false }));
+        }
+    }
+    
     handleHeadlineChange = (e) => {
 		this.setState({headline: e.target.value});
 	}
@@ -100,23 +178,15 @@ class ArticleEditor extends Component {
 	}
 
 	handleActiveChange = (e) => {
-		this.setState({active: e.target.value});
+		this.setState({active: e.target.value === "on"});
 	}
 
 	componentDidMount() {
-		this.setState({
-			headline: "Loaded Headline",
-			alias: "Loaded Alias",
-			title: "Loaded Title",
-			description: "Loaded Description",
-			preview: "Loaded Preview",
-			content: "Loaded Content",
-			active: false,
-		});
+        this.showArticle();
 	}
 
 	render() {
-		return (
+        return (
 			<div>
 				<h1 className="mt-4">Article</h1>
 				<form>
@@ -143,17 +213,7 @@ class ArticleEditor extends Component {
 						<textarea className="form-control" id="previewInput" rows="6" placeholder="Preview" onChange={this.handlePreviewChange} value={this.state.preview}></textarea>
 					</div>
 					<div className="form-group">
-						<ImageUploader
-							// defaultImages = {[]}
-							singleImage = {true}
-							withPreview = {true}
-							withIcon = {true}
-							buttonText = "Choose image"
-							onChange = {this.handleImageChange}
-							imgExtension = {[".jpg", ".png", ".gif"]}
-							maxFileSize = {5242880}
-							label = {""}
-						/>
+						<ImageUploader {...this.imageUploaderProps} />
 					</div>
 					<div className="form-group">
 						<Editor
@@ -172,7 +232,7 @@ class ArticleEditor extends Component {
 									bullist numlist outdent indent | removeformat | image | help",
 								
 								// https://www.tiny.cloud/docs/plugins/image/
-								images_upload_url: "/api/admin/image/upload"
+								images_upload_url: "/api/file-storage/store-file"
 							}}
 							onChange = { this.handleEditorChange }
 						/>
