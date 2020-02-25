@@ -57,6 +57,8 @@ class ArticleEditor extends Component {
             imageFile = imageFiles[imageFiles.length - 1];
         } else if (imageFiles.length === 1) {
             imageFile = imageFiles[0];
+        } else {
+            this.setState({image: undefined});    
         }
 
         this.setState({selectedImageFile: imageFile});
@@ -69,7 +71,9 @@ class ArticleEditor extends Component {
 	handleSave = (e) => {
         e.preventDefault();
         this.setState({ isLoading: true });
-        fileStorageService.store(this.state.selectedImageFile)
+        
+        if (this.state.selectedImageFile) {
+            fileStorageService.store(this.state.selectedImageFile)
             .then(response => { 
                 if (response.ok) {
                     return response.json();
@@ -85,6 +89,9 @@ class ArticleEditor extends Component {
             }).then(storedImageFileData => {
                 this.saveArticle(storedImageFileData.name);
             }).catch(error => this.setState({ error: error.message, isLoading: false }));
+        } else {
+            this.saveArticle(null);
+        }
     }
     
     saveArticle(imageFileName) {
@@ -97,7 +104,7 @@ class ArticleEditor extends Component {
             preview: this.state.preview,
             content: this.state.content,
             active: this.state.active,
-            image: imageFileName,
+            image: imageFileName || this.state.image,
         };
         
         articleService.save(article)
