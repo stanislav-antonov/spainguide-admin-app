@@ -10,12 +10,17 @@ import Home from "./Home";
 import ArticleList from "./ArticleList";
 import ArticleEditor from "./ArticleEditor";
 import { loadScript } from "./_helpers/load.script.js";
+import { authenticationService } from "./_services/authentication.service.js";
 
 class Main extends Component {
     componentWillMount() {
         loadScript(process.env.REACT_APP_DISTR_PATH_BASE + "/dist/common.js", "common", null);
     }
     
+    handleLogout(e) {
+        authenticationService.logout();
+    }
+
     render() {
 		return (
 			<HashRouter>
@@ -38,11 +43,8 @@ class Main extends Component {
 					
 							<div className="collapse navbar-collapse" id="navbarSupportedContent">
 								<ul className="navbar-nav ml-auto mt-2 mt-lg-0">
-									<li className="nav-item active">
-										<a className="nav-link" href="#">Home <span className="sr-only">(current)</span></a>
-									</li>
 									<li className="nav-item">
-										<a className="nav-link" href="#">Logout</a>
+										<a className="nav-link" href="#" onClick={this.handleLogout}>Logout</a>
 									</li>
 								</ul>
 							</div>
