@@ -51,7 +51,7 @@ class ArticleEditor extends Component {
         return this.state.image ? config.fileStorageBaseURL + "/" + this.state.image : undefined; 
     }
 
-	handleImageChange(imageFiles, imageDataURLs) {
+	handleImageChange = (imageFiles, imageDataURLs) => {
         var imageFile;
         if (imageFiles.length > 1) {
             imageFile = imageFiles[imageFiles.length - 1];
@@ -64,6 +64,28 @@ class ArticleEditor extends Component {
         this.setState({selectedImageFile: imageFile});
     }
 
+    handleImageUpload = (blobInfo, success, failure) => {
+        fileStorageService.store(blobInfo.blob()).then(response => { 
+            if (response.ok) {
+                return response.json();
+            } else {
+                this.setState({ isLoading: false });
+                if ([401, 403].indexOf(response.status) !== -1) {
+                    authenticationService.logout();
+                    this.props.history.push("/login");
+                }
+                
+                return Promise.reject("Bad response: " + response.status);
+            }
+        }).then(storedImageFileData => {
+            const imageURL = config.fileStorageBaseURL + "/" + storedImageFileData.name;
+            success(imageURL);
+        }).catch(error => {
+            this.setState({ error: error.message, isLoading: false });
+            failure(error);
+        });
+    }
+
 	handleEditorChange = (e) => {
 		this.setState({content: e.target.getContent()});
 	}
@@ -73,8 +95,7 @@ class ArticleEditor extends Component {
         this.setState({ isLoading: true });
         
         if (this.state.selectedImageFile) {
-            fileStorageService.store(this.state.selectedImageFile)
-            .then(response => { 
+            fileStorageService.store(this.state.selectedImageFile).then(response => { 
                 if (response.ok) {
                     return response.json();
                 } else {
@@ -238,8 +259,7 @@ class ArticleEditor extends Component {
 									alignleft aligncenter alignright alignjustify | \
 									bullist numlist outdent indent | removeformat | image | help",
 								
-								// https://www.tiny.cloud/docs/plugins/image/
-								images_upload_url: "/api/file-storage/store-file"
+                                images_upload_handler: this.handleImageUpload,
 							}}
 							onChange = { this.handleEditorChange }
 						/>
