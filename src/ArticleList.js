@@ -15,7 +15,7 @@ class ArticleList extends Component {
 		};
 	}
 
-    handleCreate = (e) => {
+    handleCreateNew = (e) => {
         e.preventDefault();
         this.props.history.push("/article/editor");
     }
@@ -60,7 +60,7 @@ class ArticleList extends Component {
                 };
 
                 return (
-                    <div key={idx} className="row mt-5">
+                    <div key={idx} className="row mb-4">
                         <div className="col-sm-6" style={imageWrapperStyle}>
                             <div style={imageStyle}></div>
                         </div>
@@ -77,13 +77,13 @@ class ArticleList extends Component {
 			<div>
                 <div className="row">
 				    <div className="col">
-                        <h1 className="mt-4 float-left">Articles</h1>
+                        <h1 className="mt-3 float-left">Articles</h1>
                     </div>
                     <div className="col">
-                        <button className="btn btn-lg btn-primary float-right mt-4" onClick={this.handleCreate}>Create</button>
+                        <button className="btn btn-primary float-right mt-4" onClick={this.handleCreateNew}>Create New</button>
                     </div>
                 </div>
-                {articles}
+                <div className="mt-3">{articles}</div>
 			</div>
 		);
 	}

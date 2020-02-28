@@ -115,6 +115,11 @@ class ArticleEditor extends Component {
         }
     }
     
+    handleBackToList = (e) => {
+        e.preventDefault();
+        this.props.history.push("/article/list");
+    }
+
     saveArticle(imageFileName) {
         const article = {
             id: this.id,
@@ -216,62 +221,69 @@ class ArticleEditor extends Component {
 	render() {
         return (
 			<div>
-				<h1 className="mt-4">Article</h1>
-				<form>
-					<div className="form-group">
-						<input type="text" className="form-control" id="headlineInput" placeholder="Headline" value={this.state.headline} onChange={this.handleHeadlineChange} />
-					</div>
+				<div className="row">
+				    <div className="col">
+                        <h1 className="mt-3 float-left">Edit Article</h1>
+                    </div>
+                    <div className="col">
+                        <button className="btn btn-primary float-right mt-4" onClick={this.handleBackToList}>Back To List</button>
+                    </div>
+                </div>
+                <form className="mt-3">
+                    <div className="form-group">
+                        <input type="text" className="form-control" id="headlineInput" placeholder="Headline" value={this.state.headline} onChange={this.handleHeadlineChange} />
+                    </div>
 
-					<div className="form-group">
-						<input type="text" className="form-control" id="aliasInput" placeholder="Alias" aria-describedby="aliasHelp" value={this.state.alias} onChange={this.handleAliasChange} />
-						<small id="aliasHelp" className="form-text text-muted">For SEO purposes: human readable URL</small>
-					</div>
+                    <div className="form-group">
+                        <input type="text" className="form-control" id="aliasInput" placeholder="Alias" aria-describedby="aliasHelp" value={this.state.alias} onChange={this.handleAliasChange} />
+                        <small id="aliasHelp" className="form-text text-muted">For SEO purposes: human readable URL</small>
+                    </div>
 
-					<div className="form-group">
-						<input type="text" className="form-control" id="titleInput" placeholder="Title" aria-describedby="titleHelp" value={this.state.title} onChange={this.handleTitleChange} />
-						<small id="titleHelp" className="form-text text-muted">For SEO purposes: goes directly to "meta title" tag</small>
-					</div>
-					
-					<div className="form-group">
-						<textarea className="form-control" id="descriptionInput" rows="3" placeholder="Description" aria-describedby="descriptionHelp" onChange={this.handleDescriptionChange} value={this.state.description}></textarea>
-						<small id="descriptionHelp" className="form-text text-muted">For SEO purposes: goes directly to "meta description" tag</small>
-					</div>
-					
-					<div className="form-group">
-						<textarea className="form-control" id="previewInput" rows="6" placeholder="Preview" onChange={this.handlePreviewChange} value={this.state.preview}></textarea>
-					</div>
-					<div className="form-group">
-						<ImageUploader {...this.imageUploaderProps} />
-					</div>
-					<div className="form-group">
-						<Editor
-							value = { this.state.content }
-							init = {{
-								height: 500,
-								menubar: false,
-								plugins: [
-									"advlist autolink lists link image charmap print preview anchor",
-									"searchreplace visualblocks code fullscreen",
-									"insertdatetime media table paste code help wordcount"
-								],
-								toolbar:
-									"undo redo | formatselect | bold italic backcolor | \
-									alignleft aligncenter alignright alignjustify | \
-									bullist numlist outdent indent | removeformat | image | help",
-								
+                    <div className="form-group">
+                        <input type="text" className="form-control" id="titleInput" placeholder="Title" aria-describedby="titleHelp" value={this.state.title} onChange={this.handleTitleChange} />
+                        <small id="titleHelp" className="form-text text-muted">For SEO purposes: goes directly to "meta title" tag</small>
+                    </div>
+                    
+                    <div className="form-group">
+                        <textarea className="form-control" id="descriptionInput" rows="3" placeholder="Description" aria-describedby="descriptionHelp" onChange={this.handleDescriptionChange} value={this.state.description}></textarea>
+                        <small id="descriptionHelp" className="form-text text-muted">For SEO purposes: goes directly to "meta description" tag</small>
+                    </div>
+                    
+                    <div className="form-group">
+                        <textarea className="form-control" id="previewInput" rows="6" placeholder="Preview" onChange={this.handlePreviewChange} value={this.state.preview}></textarea>
+                    </div>
+                    <div className="form-group">
+                        <ImageUploader {...this.imageUploaderProps} />
+                    </div>
+                    <div className="form-group">
+                        <Editor
+                            value = { this.state.content }
+                            init = {{
+                                height: 500,
+                                menubar: false,
+                                plugins: [
+                                    "advlist autolink lists link image charmap print preview anchor",
+                                    "searchreplace visualblocks code fullscreen",
+                                    "insertdatetime media table paste code help wordcount"
+                                ],
+                                toolbar:
+                                    "undo redo | formatselect | bold italic backcolor | \
+                                    alignleft aligncenter alignright alignjustify | \
+                                    bullist numlist outdent indent | removeformat | image | help",
+                                
                                 images_upload_handler: this.handleImageUpload,
-							}}
-							onChange = { this.handleEditorChange }
-						/>
-					</div>
-					<div className="form-check">
-						<input type="checkbox" className="form-check-input" id="activeCheck" onChange={this.handleActiveChange} checked={this.state.active}/>
-						<label className="form-check-label" htmlFor="activeCheck">Active</label>
-					</div>
-					<div className="form-group">
-						<button className="btn btn-lg btn-primary btn-block" onClick={this.handleSave}>Save</button>
-					</div>
-				</form>
+                            }}
+                            onChange = { this.handleEditorChange }
+                        />
+                    </div>
+                    <div className="form-check">
+                        <input type="checkbox" className="form-check-input" id="activeCheck" onChange={this.handleActiveChange} checked={this.state.active}/>
+                        <label className="form-check-label" htmlFor="activeCheck">Active</label>
+                    </div>
+                    <div className="form-group text-center mb-5">
+                        <button className="btn btn-lg btn-primary" onClick={this.handleSave}>Save Changes</button>
+                    </div>
+                </form>
 			</div>
 		);
 	}
